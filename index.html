@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Birthday Surprise for Waniya</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&family=Great+Vibes&family=Poppins:wght@400;700&display=swap');
+
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    overflow: hidden;
+    background: #000; /* pitch black start */
+    color: white;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    user-select: none;
+  }
+
+  /* Starry background */
+  #stars {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    overflow: hidden;
+    z-index: 0;
+  }
+  #stars::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: transparent url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/starfield.png') repeat;
+    animation: moveStars 120s linear infinite;
+    opacity: 0.4;
+  }
+
+  @keyframes moveStars {
+    from { transform: translate(0,0); }
+    to { transform: translate(1000px, 500px); }
+  }
+
+  /* Container for content */
+  #container {
+    position: relative;
+    z-index: 10;
+    max-width: 700px;
+    text-align: center;
+  }
+
+  /* Text to appear */
+  #questionText, #brightMessage {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.8rem;
+    opacity: 0;
+    color: #fff0f5;
+    text-shadow: 0 0 10px rgba(255,182,193,0.8);
+    transition: opacity 4s ease-in-out;
+    user-select: none;
+  }
+
+  #brightMessage {
+    color: #222;
+    text-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+
+  /* Yes button */
+  #yesBtn {
+    margin-top: 30px;
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    border: 2px solid #ff7f50;
+    border-radius: 50px;
+    background: transparent;
+    color: #ff7f50;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 3s ease-in-out;
+    font-family: 'Dancing Script', cursive;
+    box-shadow: 0 0 15px #ff7f50;
+    user-select: none;
+  }
+  #yesBtn:hover {
+    background: #ff7f50;
+    color: white;
+    box-shadow: 0 0 30px #ff6347;
+  }
+
+  /* Bright white fade */
+  #brightOverlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 15;
+    transition: opacity 6s ease-in-out;
+  }
+
+  /* Animated person with cake */
+  #personContainer {
+    position: fixed;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+    z-index: 20;
+    transition: opacity 4s ease-in-out, transform 4s ease-in-out;
+    text-align: center;
+    user-select: none;
+  }
+
+  /* Cake image */
+  #cake {
+    width: 180px;
+    cursor: pointer;
+    filter: drop-shadow(0 0 10px #ff69b4);
+    transition: transform 0.3s ease;
+    user-select: none;
+  }
+  #cake:hover {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  /* Final birthday message */
+  #finalMessage {
+    position: fixed;
+    top: 30%;
+    width: 100%;
+    text-align: center;
+    font-family: 'Great Vibes', cursive;
+    font-size: 4rem;
+    color: #ff1493;
+    text-shadow:
+       0 0 5px #ff69b4,
+       0 0 10px #ff1493,
+       0 0 20px #ff69b4,
+       0 0 40px #ff1493,
+       0 0 80px #ff69b4;
+    opacity: 0;
+    z-index: 25;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Confetti container */
+  #confetti {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 30;
+    overflow: visible;
+  }
+
+  /* Hearts and balloons container */
+  #heartsBalloons {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 30;
+    overflow: visible;
+  }
+
+  /* Animations for confetti */
+  .confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 15px;
+    background-color: red;
+    opacity: 0.85;
+    animation-name: confetti-fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(700px) rotate(360deg); opacity: 0; }
+  }
+
+  /* Hearts and balloons */
+  .heart, .balloon {
+    position: absolute;
+    opacity: 0.8;
+    user-select: none;
+  }
+  .heart {
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle at center, #ff4d6d, #b22244);
+    clip-path: polygon(50% 0%, 90% 35%, 75% 80%, 50% 100%, 25% 80%, 10% 35%);
+    animation: floatUp 6s ease-in-out infinite;
+  }
+  .balloon {
+    width: 30px;
+    height: 40px;
+    background: radial-gradient(circle at 40% 30%, #ff7f50, #d35400);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: floatUp 7s ease-in-out infinite;
+  }
+  @keyframes floatUp {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-40px); }
+  }
+
+  /* Hide scrollbar */
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div id="container">
+  <div id="questionText">do you know what impact you make on my life</div>
+  <button id="yesBtn">Yes</button>
+  <div id="brightMessage">You make it brighter</div>
+</div>
+
+<div id="brightOverlay"></div>
+
+<div id="personContainer" aria-label="Person holding cake">
+  <!-- Simple stylized person holding cake -->
+  <svg width="120" height="180" viewBox="0 0 120 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 10px #ff69b4);">
+    <!-- Head -->
+    <circle cx="60" cy="30" r="28" fill="#ffdfd7" stroke="#d46a6a" stroke-width="2"/>
+    <!-- Body -->
+    <rect x="35" y="58" width="50" height="100" rx="20" ry="25" fill="#ff7f50" />
+    <!-- Arms -->
+    <rect x="10" y="65" width="30" height="15" rx="10" ry="10" fill="#ffdfd7" />
+    <rect x="80" y="65" width="30" height="15" rx="10" ry="10" fill="#ffdfd7" />
+  </svg>
+
+  <!-- Cake -->
+  <img id="cake" src="https://i.imgur.com/Le8bIFb.png" alt="Birthday Cake with candles" title="Click me!" />
+</div>
+
+<div id="finalMessage">Happy Birthday Waniya 🎉❤️</div>
+
+<div id="confetti"></div>
+<div id="heartsBalloons"></div>
+
+<!-- Romantic soothing music -->
+<audio id="romanticMusic" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/02/16/audio_2f261bc192.mp3?filename=soft-piano-music-5072.mp3" type="audio/mpeg" />
+</audio>
+
+<script>
+  const questionText = document.getElementById('questionText');
+  const yesBtn = document.getElementById('yesBtn');
+  const brightOverlay = document.getElementById('brightOverlay');
+  const personContainer = document.getElementById('personContainer');
+  const cake = document.getElementById('cake');
+  const finalMessage = document.getElementById('finalMessage');
+  const confettiContainer = document.getElementById('confetti');
+  const heartsBalloonsContainer = document.getElementById('heartsBalloons');
+  const brightMessage = document.getElementById('brightMessage');
+  const romanticMusic = document.getElementById('romanticMusic');
+
+  // Step 1: Slowly fade in the question text
+  window.onload = () => {
+    setTimeout(() => {
+      questionText.style.opacity = 1;
+    }, 800);
+
+    setTimeout(() => {
+      yesBtn.style.opacity = 1;
+    }, 4800);
+
+    // Start music softly but paused until yes clicked
+    romanticMusic.volume = 0.1;
+  };
+
+  // Handle yes button click
+  yesBtn.onclick = () => {
+    // Fade out question & button
+    questionText.style.transition = 'opacity 2s ease-in-out';
+    yesBtn.style.transition = 'opacity 2s ease-in-out';
+    questionText.style.opacity = 0;
+    yesBtn.style.opacity = 0;
+
+    // Show bright message "You make it brighter"
+    setTimeout(() => {
+      brightMessage.style.opacity = 1;
+    }, 2200);
+
+    // Start music gently fade in and play
+    romanticMusic.play();
+
+    // After bright message visible, fade in white bright overlay slowly
+    setTimeout(() => {
+      brightOverlay.style.pointerEvents = 'auto';
+      brightOverlay.style.opacity = 0.85;
+    }, 5200);
+
+    // After white overlay mostly opaque, hide bright message and show person with cake
+    setTimeout(() => {
+      brightMessage.style.opacity = 0;
+      personContainer.style.opacity = 1;
+      personContainer.style.transform = 'translateX(-50%) translateY(0)';
+    }, 9200);
+  };
+
+  // Cake click handler
+  cake.onclick = () => {
+    // Animate cake with a small pop effect
+    cake.style.transition = 'transform 0.2s ease';
+    cake.style.transform = 'scale(1.3) rotate(10deg)';
+    setTimeout(() => {
+      cake.style.transform = 'scale(1) rotate(0deg)';
+    }, 200);
+
+    // Show final message
+    finalMessage.style.opacity = 1;
+
+    // Confetti and balloons start
+    startConfetti();
+    startHeartsBalloons();
+
+    // Stop pointer events on cake so no multiple clicks
+    cake.style.pointerEvents = 'none';
+  };
+
+  // Confetti generator
+  function startConfetti() {
+    const colors = ['#ff1493', '#ff69b4', '#ff4500', '#ff6347', '#ff7f50', '#ffb6c1'];
+    const numPieces = 70;
+
+    for (let i = 0; i < numPieces; i++) {
+      const confetti = document.createElement('div');
+      confetti.classList.add('confetti-piece');
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.left = Math.random() * window.innerWidth + 'px';
+      confetti.style.top = -20 + 'px';
+      confetti.style.width = (5 + Math.random() * 8) + 'px';
+      confetti.style.height = (10 + Math.random() * 10) + 'px';
+      confetti.style.animationDuration = (4 + Math.random() * 4) + 's';
+      confetti.style.animationDelay = (Math.random() * 5) + 's';
+      confetti.style.opacity = 0.85;
+      confettiContainer.appendChild(confetti);
+
+      // Clean up confetti after animation
+      setTimeout(() => confetti.remove(), 12000);
+    }
+  }
+
+  // Hearts and balloons generator
+  function startHeartsBalloons() {
+    const colors = ['#ff4d6d', '#b22244', '#ff7f50', '#d35400', '#ff69b4'];
+    const total = 30;
+
+    for (let i = 0; i < total; i++) {
+      const isHeart = Math.random() > 0.5;
+      const elem = document.createElement('div');
+      elem.classList.add(isHeart ? 'heart' : 'balloon');
+      elem.style.left = (Math.random() * window.innerWidth) + 'px';
+      elem.style.top = (window.innerHeight + Math.random() * 100) + 'px';
+      elem.style.animationDuration = (5 + Math.random() * 5) + 's';
+      elem.style.animationDelay = (Math.random() * 5) + 's';
+      elem.style.background = colors[Math.floor(Math.random() * colors.length)];
+      heartsBalloonsContainer.appendChild(elem);
+
+      // Clean up hearts and balloons after animation
+      setTimeout(() => elem.remove(), 15000);
+    }
+
+    // Repeat hearts and balloons every 7 seconds while visible
+    setTimeout(() => {
+      if (finalMessage.style.opacity > 0) {
+        startHeartsBalloons();
+      }
+    }, 7000);
+  }
+</script>
+
+</body>
+</html>
+
